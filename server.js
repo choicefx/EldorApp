@@ -60,7 +60,7 @@ app.get('/about',(req,res) => {
     });
 });
 
-// third pass
+// contact route
 app.get('/contact',(req,res) => {
     res.render('contact', {
         title: 'Contact'
@@ -68,11 +68,24 @@ app.get('/contact',(req,res) => {
 });
 
 // facebook authentication route
-app.get('/auth/facebook', passport.authenticate('facebook'));
+app.get('/auth/facebook', passport.authenticate('facebook',{
+    scope: ['email']
+}));
 app.get('/auth/facebook/callback', passport.authenticate('facebook',{
     successRedirect: '/profile',
     failureRedirect: '/'
 }));
+
+app.get('/profile', (req,res) => {
+    User.findById({_id:req.user._id}).then((user) => {
+        if (user) {
+            res.render('profile',{
+                title: 'Facebook Profile',
+                user:user
+            });
+        }
+    });
+});
 
 app.post('/contactUs',(req,res) => {
     console.log(req.body);
